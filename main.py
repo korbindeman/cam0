@@ -1,7 +1,6 @@
 import os
 from datetime import datetime
 
-from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QPushButton, QVBoxLayout, QApplication, QWidget
 
 from picamera2.previews.qt import QGlPicamera2
@@ -15,18 +14,29 @@ CAPTURE_DIR = os.path.expanduser("~/Pictures/captures")
 os.makedirs(CAPTURE_DIR, exist_ok=True)
 
 
+def capture(format):
+    if format not in ["png", "jpg"]:
+        return
+
+    cfg = picam2.create_still_configuration()
+
+    ts = datetime.now().strftime("%Y%m%d_%H%M%S")
+    filename = os.path.join(CAPTURE_DIR, f"{ts}.{format}")
+
+    picam2.switch_mode_and_capture_file(
+        cfg, filename, signal_function=qpicamera2.signal_done
+    )
+
+
 def on_button_clicked():
-  button.setEnabled(False)
-  cfg = picam2.create_still_configuration()
+    button.setEnabled(False)
+    capture("png")
 
-  ts = datetime.now().strftime("%Y%m%d_%H%M%S")
-  filename = os.path.join(CAPTURE_DIR, f"{ts}.png")
-
-  picam2.switch_mode_and_capture_file(cfg, filename, signal_function=qpicamera2.signal_done)
 
 def capture_done(job):
-  result = picam2.wait(job)
-  button.setEnabled(True)
+    result = picam2.wait(job)
+    button.setEnabled(True)
+
 
 app = QApplication([])
 

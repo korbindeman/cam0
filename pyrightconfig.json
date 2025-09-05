@@ -1,0 +1,11 @@
+{
+  "venvPath": ".",
+  "venv": ".venv",
+  "pythonVersion": "3.11",
+  "stubPath": "typings",
+  "reportMissingImports": true,
+  "reportMissingTypeStubs": "warning",
+  "extraPaths": ["stubs"],
+  "typeCheckingMode": "basic",
+  "reportMissingTypeStubs": false
+}

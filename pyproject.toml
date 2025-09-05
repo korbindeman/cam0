@@ -1,0 +1,9 @@
+[project]
+name = "cam0"
+version = "0.1.0"
+description = "Software for my Raspberry Pi based camera."
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "pyqt5>=5.15.11",
+]

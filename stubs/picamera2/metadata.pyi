@@ -1,0 +1,6 @@
+from _typeshed import Incomplete
+
+class Metadata:
+    __dict__: Incomplete
+    def __init__(self, metadata={}) -> None: ...
+    def make_dict(self): ...
