@@ -1,35 +1,48 @@
 import os
 from datetime import datetime
-from PyQt6.QtWidgets import QApplication
-from PyQt6.QtCore import Qt
-from picamera2 import Picamera2
-from picamera2.previews.qt import QGlPicamera2
 
-# Ensure capture folder exists
-CAPTURE_DIR = os.path.expanduser("~/Pictures/captures")
-os.makedirs(CAPTURE_DIR, exist_ok=True)
+from PyQt5 import QtWidgets
+from PyQt5.QtWidgets import QPushButton, QVBoxLayout, QApplication, QWidget
+
+from picamera2.previews.qt import QGlPicamera2
+from picamera2 import Picamera2
 
 picam2 = Picamera2()
 
-class View(QGlPicamera2):
-    def mousePressEvent(self, event):
-        if event.button() == Qt.MouseButton.LeftButton:
-            pos = event.position()
-            print(f"Tap at: {pos.x():.0f}, {pos.y():.0f}")
+picam2.configure(picam2.create_preview_configuration())
 
-            # Generate timestamped filename
-            ts = datetime.now().strftime("%Y%m%d_%H%M%S")
-            filename = os.path.join(CAPTURE_DIR, f"{ts}.jpg")
+CAPTURE_DIR = os.path.expanduser("~/Pictures/captures")
+os.makedirs(CAPTURE_DIR, exist_ok=True)
 
-            picam2.capture_file(filename)
-            print(f"Saved: {filename}")
 
-        super().mousePressEvent(event)
+def on_button_clicked():
+  button.setEnabled(False)
+  cfg = picam2.create_still_configuration()
+
+  ts = datetime.now().strftime("%Y%m%d_%H%M%S")
+  filename = os.path.join(CAPTURE_DIR, f"{ts}.jpg")
+
+  picam2.switch_mode_and_capture_file(cfg, filename, signal_function=qpicamera2.signal_done)
+
+def capture_done(job):
+  result = picam2.wait(job)
+  button.setEnabled(True)
 
 app = QApplication([])
-view = View(picam2, width=1280, height=720)
-view.setWindowTitle("Tap to Capture")
-view.showFullScreen()
+
+qpicamera2 = QGlPicamera2(picam2, width=800, height=600, keep_ar=False)
+button = QPushButton("Click to capture JPEG")
+window = QWidget()
+qpicamera2.done_signal.connect(capture_done)
+button.clicked.connect(on_button_clicked)
+
+layout_v = QVBoxLayout()
+layout_v.addWidget(qpicamera2)
+layout_v.addWidget(button)
+window.setWindowTitle("Qt Picamera2 App")
+window.resize(640, 480)
+window.setLayout(layout_v)
 
 picam2.start()
+window.show()
 app.exec()
