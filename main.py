@@ -1,7 +1,7 @@
 import os
 from datetime import datetime
 
-from PyQt5.QtWidgets import QPushButton, QVBoxLayout, QApplication, QWidget
+from PyQt5.QtWidgets import QHBoxLayout, QPushButton, QVBoxLayout, QApplication, QWidget
 
 from picamera2.previews.qt import QGlPicamera2
 from picamera2 import Picamera2
@@ -29,30 +29,38 @@ def capture(format):
 
 
 def on_button_clicked():
-    button.setEnabled(False)
+    shutter_button.setEnabled(False)
     capture("png")
 
 
 def capture_done(job):
     result = picam2.wait(job)
-    button.setEnabled(True)
+    shutter_button.setEnabled(True)
 
 
 app = QApplication([])
 
 qpicamera2 = QGlPicamera2(picam2, width=800, height=600, keep_ar=False)
-button = QPushButton("Capture")
+
+shutter_button = QPushButton("Capture")
+quit_button = QPushButton("Quit")
+
 window = QWidget()
+
 qpicamera2.done_signal.connect(capture_done)
-button.clicked.connect(on_button_clicked)
+shutter_button.clicked.connect(on_button_clicked)
+quit_button.clicked.connect(quit)
 
 layout_v = QVBoxLayout()
 layout_v.addWidget(qpicamera2)
-layout_v.addWidget(button)
+
+layout_v.addWidget(shutter_button)
+layout_v.addWidget(quit_button)
+
 window.setWindowTitle("cam0")
-window.resize(640, 480)
+# window.resize(640, 480)
 window.setLayout(layout_v)
 
 picam2.start()
-window.show()
+window.showFullScreen()
 app.exec()
