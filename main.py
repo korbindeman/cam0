@@ -1,7 +1,7 @@
 import os
 from datetime import datetime
 
-from PyQt5.QtWidgets import QHBoxLayout, QPushButton, QVBoxLayout, QApplication, QWidget
+from PyQt5.QtWidgets import QPushButton, QVBoxLayout, QApplication, QWidget
 
 from picamera2.previews.qt import QGlPicamera2
 from picamera2 import Picamera2
@@ -40,7 +40,7 @@ def capture_done(job):
 
 app = QApplication([])
 
-qpicamera2 = QGlPicamera2(picam2, width=800, height=600, keep_ar=False)
+qpicamera2 = QGlPicamera2(picam2, width=800, height=600, keep_ar=True)
 
 shutter_button = QPushButton("Capture")
 quit_button = QPushButton("Quit")
@@ -58,9 +58,13 @@ layout_v.addWidget(shutter_button)
 layout_v.addWidget(quit_button)
 
 window.setWindowTitle("cam0")
-# window.resize(640, 480)
 window.setLayout(layout_v)
 
 picam2.start()
+
 window.showFullScreen()
+
+# window.resize(640, 480)
+# window.show()
+
 app.exec()
